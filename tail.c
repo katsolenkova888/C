@@ -14,9 +14,14 @@ int main(int argc, char *argv[]){
 	ssize_t wres, wwres;
 	char buff[size], buff2[size];
 	off_t offset, off;
-	int count = -1;
+	int buff_err_open = 300;
+	char open_buff[buff_err_open];
 	int line_count = 0;
+	int buff_size = 300;
+	char write_buff[buff_size];
 	for(i=1; i<argc; i++){
+		int count = -1;
+		int line_count = 0;
 		if(*argv[i]=='-'|| argc==1){
 			while(1){
 				rres = read(STDIN_FILENO,buff,1);
@@ -32,8 +37,13 @@ int main(int argc, char *argv[]){
 		else{
 			fd = open(argv[i], O_RDONLY);
 			if(fd<0){ 
-				perror("open:");
+				int err_open = snprintf(open_buff, buff_err_open, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
+				write(STDOUT_FILENO, open_buff, err_open);
 				return -1;
+			}
+			if(argc>2){
+				int name = snprintf(write_buff, buff_size, "==> %s <==\n", argv[i]);
+				write(STDOUT_FILENO,write_buff,name);
 			}
 		
 			
@@ -51,8 +61,10 @@ int main(int argc, char *argv[]){
 				}
    
 	
-				
-				if (line_count == 10){
+				if(rres == 0){
+					break;
+				}
+				if (line_count == 11){
 					break;
 				}
 				if(buff[0] =='\n'){
@@ -61,12 +73,7 @@ int main(int argc, char *argv[]){
 				
 			}
 			//printf("%d",line_count);
-			while(line_count>0){
-				/*off = lseek(fd, 0, SEEK_CUR);
-				if(off<0){
-					perror("lseek");
-					return -1;
-				}*/
+			while(line_count>-1){
 				res = read(fd, buff2,1);
 				if(buff2[0] =='\n'){
 					line_count--;
@@ -79,13 +86,19 @@ int main(int argc, char *argv[]){
 				}
 				wwres+=wres;
 			}
-	
+			//int buff_size_line = sizeof('\n');
+			//char line_buff[buff_size_line];			
+			//int new_line = snprintf(line_buff, buff_size_line, "\n");
+			//write(STDOUT_FILENO,line_buff,new_line);
+			
 			cclose = close(fd);
 				if(cclose<0){
 				perror("close");
 				return -1;
 				}
 		}
+		write(STDOUT_FILENO,'\n',sizeof('\n'));
+		
 	}	
 
 return 0;
