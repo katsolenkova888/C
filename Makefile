@@ -1,2 +1,2 @@
 tail:
-	gcc tail.c -o tail
+	gcc tail2.c -o tail

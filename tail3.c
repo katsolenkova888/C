@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
 	
 	
 
-	for(i = 1; i<argc; i++){
+	for(i = 0; i<argc; i++){
 		ssize_t rres = 0;
 		ssize_t wres = 0;
 		ssize_t res = 0;
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]){
 					
 				}
 				if(rres == 0){
-					break;
+					return -1;;
 				}
 				if (line_count == 11){
 					break;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]){
 				} 				
 				
 			}
-			if(i>=1){
+			if(argc>0){
 				write(STDOUT_FILENO, "\n", 1);
 			}		
 		cclose = close(fd);
