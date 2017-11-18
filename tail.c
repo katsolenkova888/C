@@ -12,7 +12,8 @@ int main(int argc, char *argv[]){
 	int cclose;
 	ssize_t rres, res;
 	ssize_t wres, wwres;
-	char buff[size], buff2[size];
+	char buff[size];
+	char buff2[size];
 	off_t offset, off;
 	int buff_err = 300;
 	char open_buff[buff_err];
@@ -38,13 +39,13 @@ int main(int argc, char *argv[]){
 		else{
 			fd = open(argv[i], O_RDONLY);
 			if(fd<0){ 
-				//int err_open = snprintf(open_buff, buff_err, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
-				//write(STDOUT_FILENO, open_buff, err_open);
+				int err_open = snprintf(open_buff, buff_err, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
+				write(STDOUT_FILENO, open_buff, err_open);
 				return -1;
 			}
 			if(argc>2){
-				//int name = snprintf(write_buff, buff_size, "==> %s <==\n", argv[i]);
-				//write(STDOUT_FILENO,write_buff,name);
+				int name = snprintf(write_buff, buff_size, "==> %s <==\n", argv[i]);
+				write(STDOUT_FILENO,write_buff,name);
 			}
 		
 			
@@ -87,19 +88,19 @@ int main(int argc, char *argv[]){
 				}
 				wwres+=wres;
 			}
-			//int buff_size_line = sizeof('\n');
-			//char line_buff[buff_size_line];			
-			//int new_line = snprintf(line_buff, buff_size_line, "\n");
-			//write(STDOUT_FILENO,line_buff,new_line);
+			int buff_size_line = sizeof('\n');
+			char line_buff[buff_size_line];			
+			int new_line = snprintf(line_buff, buff_size_line, "\n");
+			write(STDOUT_FILENO,line_buff,new_line);
 			
 			cclose = close(fd);
 				if(cclose<0){
-				//int err_close = snprintf(close_buff, buff_err, "tail: error reading '%s': Input/output error\n", argv[i]);
-				//write(STDOUT_FILENO, close_buff, err_close);
+				int err_close = snprintf(close_buff, buff_err, "tail: error reading '%s': Input/output error\n", argv[i]);
+				write(STDOUT_FILENO, close_buff, err_close);
 				return -1;
 				}
 		}
-		write(STDOUT_FILENO,'\n',sizeof('\n'));
+		//write(STDOUT_FILENO,'\n',sizeof('\n'));
 		
 	}	
 

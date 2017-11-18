@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
    
 	
 				
-				if (line_count == 10){
+				if (line_count == 11){
 					break;
 				}
 				if(buff[0] =='\n'){
