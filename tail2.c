@@ -43,7 +43,7 @@ int main(int argc, char *argv[]){
 				int name = snprintf(write_buff, buff_size, "==> %s <==\n", argv[i]);
 				write(STDOUT_FILENO,write_buff,name);
 			}
-			offset_end = lseek(fd, 0, SEEK_END);
+			//offset_end = lseek(fd, 0, SEEK_END);
 			while(1){
 				offset = lseek(fd, count, SEEK_END);
 				if(offset<0){
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]){
 				}
 				count--;
 				rres = read(fd,buff,1);
-				if(rres<=0){
+				if(rres<0){
 					int err_read = snprintf(read_buff, buff_size, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
 					write(STDOUT_FILENO, read_buff, err_read);
 					return -1;
@@ -70,13 +70,8 @@ int main(int argc, char *argv[]){
 			if(line_count<11){
 				lseek(fd, 0, SEEK_SET);
 			}
-			else lseek(fd, offset + 1, SEEK_SET);
+			else lseek(fd, offset + 2, SEEK_SET);
 			while(rres = read(fd, buff, 1) > 0){
-				//res = read(fd, buff2,1);
-				//if(buff2[0] =='\n'){
-					//line_count--;
-				//}
-				//res+=res;
 				wres=write(STDOUT_FILENO,buff,rres);
 				if(wres<0){
 					perror("write");
@@ -84,7 +79,7 @@ int main(int argc, char *argv[]){
 				} 				
 				
 			}
-			if(i>=1){
+			if(i<argc-1){
 				write(STDOUT_FILENO, "\n", 1);
 			}		
 		cclose = close(fd);
