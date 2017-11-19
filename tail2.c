@@ -14,11 +14,13 @@ int main(int argc, char *argv[]){
 	char open_buff[buff_size];
 	char read_buff[buff_size];
 	char write_buff[buff_size];
+	char err_buff[buff_size];
 	char close_buff[buff_size];
 	char buff[size];
 	char buff2[size];
 	char buff3[size];
 	int cclose;
+	int err = 0;
 	
 	
 
@@ -35,9 +37,11 @@ int main(int argc, char *argv[]){
 			while(rres != EOF){
 				rres = read(STDIN_FILENO, buff3, 1);
 				if(rres<0){
-					//int err_read = snprintf(read_buff, buff_size, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
-					//write(STDOUT_FILENO, read_buff, err_read);
-					return -1;
+					char err1[100] = "tail: error reading \0";
+					char err2[15] = "'\0";
+					strcat(err1, argv[i]);
+					strcat(err1, err2);
+					perror(err1);
 					
 				}
 				if(rres == 0){
@@ -48,9 +52,17 @@ int main(int argc, char *argv[]){
 				
 			}
 			fd = open(buff3, O_RDONLY);
+			if(fd<0){ 
+				int err_open = snprintf(open_buff, buff_size, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
+				write(STDOUT_FILENO, open_buff, err_open);
+				err = 1;
+				
+			}
 			if(argc>2){
-				int name = snprintf(write_buff, buff_size, "==> %s <==\n", argv[i]);
-				write(STDOUT_FILENO,write_buff,name);
+				if(err == 0){
+					int name = snprintf(write_buff, buff_size, "==> %s <==\n", argv[i]);
+					write(STDOUT_FILENO,write_buff,name);
+				}
 			}
 			while(1){
 				offset = lseek(fd, count, SEEK_END);
@@ -60,9 +72,12 @@ int main(int argc, char *argv[]){
 				count--;
 				rres = read(fd,buff,1);
 				if(rres<0){
-					int err_read = snprintf(read_buff, buff_size, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
-					write(STDOUT_FILENO, read_buff, err_read);
-					return -1;
+					char err1[100] = "tail: error reading \0";
+					char err2[15] = "'\0";
+					strcat(err1, argv[i]);
+					strcat(err1, err2);
+					perror(err1);
+					//return -1;
 					
 				}
 				if(rres == 0){
@@ -82,8 +97,11 @@ int main(int argc, char *argv[]){
 			while(rres = read(fd, buff, 1) > 0){
 				wres=write(STDOUT_FILENO,buff,rres);
 				if(wres<0){
-					perror("write");
-					//return -1;
+					char err1[100] = "tail: error writing '\0";
+					char err2[15] = "'\0";
+					strcat(err1, argv[i]);
+					strcat(err1, err2);
+					perror(err1);
 				} 				
 				
 			}
@@ -93,7 +111,7 @@ int main(int argc, char *argv[]){
 			cclose = close(fd);
 			if(cclose<0){
 				int err_close = snprintf(close_buff, buff_size, "tail: error reading '%s': Input/output error\n", argv[i]);
-				write(STDOUT_FILENO, close_buff, err_close);
+				write(STDERR_FILENO, close_buff, err_close);
 				//return -1;
 			}
 			
@@ -104,11 +122,20 @@ int main(int argc, char *argv[]){
 			if(fd<0){ 
 				int err_open = snprintf(open_buff, buff_size, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
 				write(STDOUT_FILENO, open_buff, err_open);
+				//int err_open = snprintf(open_buff, buff_size, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
+				//write(STDERR_FILENO, open_buff, err_open);
+				err =1;
+				continue;
 				//return -1;
 			}
 			if(argc>2){
-				int name = snprintf(write_buff, buff_size, "==> %s <==\n", argv[i]);
-				write(STDOUT_FILENO,write_buff,name);
+				if(i > 1){
+					write(STDOUT_FILENO, "\n", 1);
+				}
+				//if(err == 0){
+					int name = snprintf(write_buff, buff_size, "==> %s <==\n", argv[i]);
+					write(STDOUT_FILENO,write_buff,name);
+				//}
 			}
 			
 			while(1){
@@ -119,9 +146,14 @@ int main(int argc, char *argv[]){
 				count--;
 				rres = read(fd,buff,1);
 				if(rres<0){
-					int err_read = snprintf(read_buff, buff_size, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
-					write(STDOUT_FILENO, read_buff, err_read);
-					return -1;
+					char err1[100] = "tail: error reading \0";
+					char err2[15] = "'\0";
+					strcat(err1, argv[i]);
+					strcat(err1, err2);
+					perror(err1);
+					//int err_read = snprintf(read_buff, buff_size, "tail: error reading '%s': Is a directory", argv[i]);
+					//write(STDERR_FILENO, read_buff, err_read);
+					//return -1;
 					
 				}
 				if(rres == 0){
@@ -141,18 +173,26 @@ int main(int argc, char *argv[]){
 			while(rres = read(fd, buff, 1) > 0){
 				wres=write(STDOUT_FILENO,buff,rres);
 				if(wres<0){
-					perror("write");
-					//return -1;
+					char err1[100] = "tail: error writing '\0";
+					char err2[15] = "'\0";
+					strcat(err1, argv[i]);
+					strcat(err1, err2);
+					perror(err1);
+					
+					//int err_write = snprintf(err_buff, buff_size, "tail: error writing '%s': No space left on device", argv[i]);
+					//write(STDERR_FILENO, err_buff, err_write);
 				} 				
 				
 			}
-			if(i<argc-1){
-				write(STDOUT_FILENO, "\n", 1);
-			}		
+			//if(i<argc-1){
+				//write(STDOUT_FILENO, "\n", 1);
+			//}		
 			cclose = close(fd);
 			if(cclose<0){
-				int err_close = snprintf(close_buff, buff_size, "tail: error reading '%s': Input/output error\n", argv[i]);
-				write(STDOUT_FILENO, close_buff, err_close);
+				if(err == 0){
+					int err_close = snprintf(close_buff, buff_size, "tail: error reading '%s': Input/output error\n", argv[i]);
+					write(STDERR_FILENO, close_buff, err_close);
+				}
 				//return -1;
 			}
 		}
