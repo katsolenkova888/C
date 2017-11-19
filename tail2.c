@@ -20,7 +20,8 @@ int main(int argc, char *argv[]){
 	char buff2[size];
 	char buff3[size];
 	int cclose;
-	int err = 0;
+	
+	int j = 0;
 	
 	
 
@@ -31,9 +32,17 @@ int main(int argc, char *argv[]){
 		off_t offset_end, offset;
 		int count = -1;
 		int line_count = 0;
+		int fp;
+		int err = 0;
 		if(*argv[i] == '-' || argc == 1){
-			//char *file = "new_file.txt";
-			//fd = open("new_file.txt", O_CREAT|O_WRONLY,S_IRWXU);
+			if(argc>2){
+				if(err == 0){
+					int name = snprintf(write_buff, buff_size, "==> Standart input <==\n");
+					write(STDOUT_FILENO,write_buff,name);
+				}
+			}
+			char *file = "new_file.txt";
+			fp = open("new_file.txt", O_CREAT|O_WRONLY,S_IRWXU);
 			while(rres != EOF){
 				rres = read(STDIN_FILENO, buff3, 1);
 				if(rres<0){
@@ -48,22 +57,18 @@ int main(int argc, char *argv[]){
 					break;
 				}
 				
-			
+			wres = write(fp, buff3, 1);
 				
 			}
-			fd = open(buff3, O_RDONLY);
+			cclose = close(fp);
+			fd = open(file, O_RDONLY);
 			if(fd<0){ 
 				int err_open = snprintf(open_buff, buff_size, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
 				write(STDOUT_FILENO, open_buff, err_open);
 				err = 1;
 				
 			}
-			if(argc>2){
-				if(err == 0){
-					int name = snprintf(write_buff, buff_size, "==> %s <==\n", argv[i]);
-					write(STDOUT_FILENO,write_buff,name);
-				}
-			}
+			
 			while(1){
 				offset = lseek(fd, count, SEEK_END);
 				if(offset<0){
@@ -125,6 +130,7 @@ int main(int argc, char *argv[]){
 				//int err_open = snprintf(open_buff, buff_size, "tail: cannot open '%s' for reading: No such file or directory\n", argv[i]);
 				//write(STDERR_FILENO, open_buff, err_open);
 				err =1;
+				j = i-1;
 				continue;
 				//return -1;
 			}
