@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+
+char** parse_cmdline(const char *cmdline);
+
+
+char** parse_cmdline(const char *cmdline){
+printf("called");
+	int i=0, j;
+	cmdline = malloc(100*sizeof(char));
+	char **parsed;
+	parsed = malloc(100*sizeof(char));
+	ssize_t wres;
+	char *buff;
+	int k = 0;
+	printf("%s",cmdline);
+	for(j=0; cmdline[j]!='\0'; j++){
+		printf("here");
+		//char space = " " ;
+		if(strcmp(cmdline[j], " ") == 0){
+			printf("AAA%s", buff);
+			strcpy(parsed[i],buff);
+			//parsed[i]=buff;
+printf("%s",buff);
+			k=0;
+			i++;
+		}
+		else{
+			//wres=write(parsed[i][j],cmdline+i,1); 
+			//if(wres<0){
+				//perror("write");
+			buff[k]=cmdline[j];
+			k++;
+			}
+			
+		}
+	printf("Parsed is: %s",*parsed);
+	return parsed;
+}
+
+
+int main(){
+	char *cmdline;
+	cmdline = (char*)malloc(100*sizeof(char));
+	printf("$ ");
+	fgets(cmdline, 100, stdin);
+	char **parsed;
+	parsed = malloc(100*sizeof(char));
+	parsed = parse_cmdline(cmdline);
+	//for(int i=0; i<2; i++){
+		//printf("hoo %s",parsed[i]);
+	//}
+	printf("hi %s",parsed[1]);
+	pid_t pid;
+	pid = fork();
+
+	if(pid > 0){//parent process
+		waitpid(pid, NULL , 0); 
+		}	
+	else{
+		if(pid==0){
+			printf("$ ");
+
+				//char* const* exe = &parsed[i];
+				//const char *filename=parsed[0];
+				//execv(filename,exe);
+				printf("INNNN");
+				
+		}
+
+	}
+	return 0;
+}
+
+

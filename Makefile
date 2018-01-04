@@ -1,2 +1,2 @@
-tail:
-	gcc tail2.c -o tail
+shell: shellp1.c
+	gcc shellp1.c -o shell
